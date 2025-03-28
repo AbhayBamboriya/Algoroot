@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
@@ -13,25 +13,33 @@ const HomePage = () => {
   const [errors, setErrors] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Form validation function
+  useEffect(() => {
+    // Check if user is already logged in
+    const user = localStorage.getItem('registeredUsers');
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      if (parsedUser.isLoggedIn) {
+        setIsAuthenticated(true);
+        navigate("/details");
+      }
+    }
+  }, [navigate]);
+
   const validateForm = () => {
     const newErrors = {};
 
-    // Email validation
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
-    // Username validation (only for signup)
     if (!isLogin && !formData.username) {
       newErrors.username = 'Username is required';
     }
@@ -40,54 +48,130 @@ const HomePage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle input changes
+  const handleRegister = () => {
+    // Retrieve existing users or initialize empty array
+    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    
+    // Check if email already exists
+    const userExists = existingUsers.some(user => user.email === formData.email);
+    
+    if (userExists) {
+      setErrors({
+        email: 'Email already registered. Please login or use a different email.'
+      });
+      return;
+    }
+
+    // Create new user object
+    const newUser = {
+      username: formData.username || formData.email.split('@')[0],
+      email: formData.email,
+      password: formData.password, // Note: In a real app, you'd hash this
+      registeredAt: new Date().toISOString()
+    };
+
+    // Add new user to existing users
+    const updatedUsers = [...existingUsers, newUser];
+    
+    // Save to localStorage
+    localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+    
+    // Optional: Auto-login after registration
+    handleLogin();
+  };
+
+  const handleLogin = () => {
+    // Retrieve registered users
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    
+    // Find user by email and password
+    const user = registeredUsers.find(
+      u => u.email === formData.email && u.password === formData.password
+    );
+    
+    if (user) {
+      // Create a logged-in user object
+      const loggedInUser = {
+        ...user,
+        isLoggedIn: true,
+        lastLoginAt: new Date().toISOString()
+      };
+  
+      // Update localStorage with logged-in status
+      const updatedUsers = registeredUsers.map(u => 
+        u.email === user.email ? loggedInUser : u
+      );
+      localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+      
+      // Set authentication state
+    //   setIsAuthenticated(true);
+      
+      // Navigate to details page
+      console.log('hrereerrer');
+      
+      navigate('/details');
+      console.log('vvvv');
+      
+    } else {
+      // Invalid credentials
+      setErrors({
+        email: 'Invalid email or password',
+        password: 'Invalid email or password'
+      });
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      if (isLogin) {
+        handleLogin();
+      } else {
+        handleRegister();
+      }
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      // Simulate authentication
-        localStorage.setItem('user', JSON.stringify({
-            email: formData.email,
-            username: formData.username,
-            isAuthenticated: true
-        }));
-        // 
-        setIsAuthenticated(true);
-        const r=alert('Authentication Successful!');
-        console.log('r',r);
-        
-        navigate("/details");
-        
+    
+    // Clear specific error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({...prev, [name]: ''}));
     }
   };
 
-  // Render authentication or dashboard based on state
+  const handleLogout = () => {
+    // Retrieve registered users
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    
+    // Update logged-in status
+    const updatedUsers = registeredUsers.map(u => ({
+      ...u, 
+      isLoggedIn: false
+    }));
+    
+    localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+    
+    // Reset states
+    setIsAuthenticated(false);
+    setFormData({
+      username: '',
+      email: '',
+      password: ''
+    });
+    
+    navigate("/");
+  };
+
+  // Early return for authenticated state
   if (isAuthenticated) {
-    return (
-      <div className="home-page">
-        <div className="auth-container">
-          <h2>Welcome, {formData.username || formData.email}!</h2>
-          <button 
-            onClick={() => {
-              localStorage.removeItem('user');
-              setIsAuthenticated(false);
-            }}
-            className="logout-btn"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    );
+    return null; // Prevents render while navigating
   }
 
   return (

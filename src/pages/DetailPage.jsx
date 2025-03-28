@@ -6,7 +6,7 @@ import Navbar from '../components/NavBar';
 import { useAuth } from '../content/AuthContext';
 import Sidebar from '../components/SideBar';
 
-const DetailsPage = () => {
+const   DetailsPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 

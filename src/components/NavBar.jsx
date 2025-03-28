@@ -9,13 +9,26 @@ const Navbar = ({ user, email, onLogout }) => {
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     
+ 
+
     const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
+            navigate("/");
+      };
+
     const ondeleteAccount = () => {
-       deleteAccount();
-        navigate('/');
+        localStorage.removeItem('user');
+        // setIsAuthenticated(false);
+        // setFormData({
+        //   username: '',
+        //   email: '',
+        //   password: ''
+        // });
+    
+        console.log('ccjcjcj');
+        
+        Promise.resolve().then(() => {
+            navigate("/");
+          });
     };
     
     return (
