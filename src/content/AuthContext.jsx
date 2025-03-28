@@ -22,6 +22,8 @@ export const AuthProvider = ({ children }) => {
 
   // Login function
   const login = (userData) => {
+    console.log('in login reached');
+    
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
   };

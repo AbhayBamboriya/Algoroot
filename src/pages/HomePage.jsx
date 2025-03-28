@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './HomePage.css';
+import { useAuth } from '../content/AuthContext';
 
 const HomePage = () => {
+
+    const {login}=useAuth()
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     username: '',
@@ -81,46 +84,45 @@ const HomePage = () => {
   };
 
   const handleLogin = () => {
-    // Retrieve registered users
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    
-    // Find user by email and password
-    const user = registeredUsers.find(
-      u => u.email === formData.email && u.password === formData.password
-    );
-    
-    if (user) {
-      // Create a logged-in user object
-      const loggedInUser = {
-        ...user,
-        isLoggedIn: true,
-        lastLoginAt: new Date().toISOString()
-      };
+  // Retrieve registered users
+  const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+//   navigate('/details');
   
-      // Update localStorage with logged-in status
-      const updatedUsers = registeredUsers.map(u => 
-        u.email === user.email ? loggedInUser : u
-      );
-      localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
-      
-      // Set authentication state
-    //   setIsAuthenticated(true);
-      
-      // Navigate to details page
-      console.log('hrereerrer');
-      
-      navigate('/details');
-      console.log('vvvv');
-      
-    } else {
-      // Invalid credentials
-      setErrors({
-        email: 'Invalid email or password',
-        password: 'Invalid email or password'
-      });
-    }
-  };
+  // Find user by email and password
+  const user = registeredUsers.find(
+    u => u.email === formData.email && u.password === formData.password
+  );
+  
+  if (user) {
+    // Create a logged-in user object
+    const loggedInUser = {
+      ...user,
+      isLoggedIn: true,
+      lastLoginAt: new Date().toISOString()
+    };
 
+    
+    // Update localStorage with logged-in status
+    const updatedUsers = registeredUsers.map(u => 
+      u.email === user.email ? loggedInUser : u
+    );
+    localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+    window.location.href = '/details';
+    login(user)
+    // Explicitly set authentication state
+    setIsAuthenticated(true);
+
+    <Navigate to={'/details'}/>
+    // Navigate to details page
+    // navigate('/details');
+  } else {
+    // Invalid credentials
+    setErrors({
+      email: 'Invalid email or password',
+      password: 'Invalid email or password'
+    });
+  }
+};
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -165,7 +167,7 @@ const HomePage = () => {
       email: '',
       password: ''
     });
-    
+    // <Navigate to={}
     navigate("/");
   };
 

@@ -15,9 +15,9 @@ function App() {
         <Route 
           path="/details" 
           element={
-            <PrivateRoute>
+            // <Privat??eRoute>
               <DetailsPage />
-            </PrivateRoute>
+            // </PrivateRoute>
           } 
         />
          <Route path="*" element={<Navigate to="/" replace />} />

@@ -5,7 +5,8 @@ import { useAuth } from '../content/AuthContext';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
-
+    // console.log('usersjsjs',user);
+    
   // If no user is authenticated, redirect to homepage
   if (!user || !user.isAuthenticated) {
     return <Navigate to="/" replace />;

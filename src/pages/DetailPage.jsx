@@ -9,7 +9,8 @@ import Sidebar from '../components/SideBar';
 const   DetailsPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
+    console.log('user in detail',user);
+    
   // Handle logout
   const handleLogout = () => {
     logout();
@@ -19,8 +20,8 @@ const   DetailsPage = () => {
   return (
     <div className="details-page">
       <Navbar 
-        username={user.username} 
-        email={user.email}
+        username={user?.username} 
+        email={user?.email}
         onLogout={handleLogout} 
       />
       <div className="content-wrapper">
