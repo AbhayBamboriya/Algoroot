@@ -16,19 +16,25 @@ const Navbar = ({ user, email, onLogout }) => {
       };
 
     const ondeleteAccount = () => {
-        localStorage.removeItem('user');
-        // setIsAuthenticated(false);
-        // setFormData({
-        //   username: '',
-        //   email: '',
-        //   password: ''
-        // });
-    
-        console.log('ccjcjcj');
+        console.log('email in delete',email);
         
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+  
+        // Filter out the current user's email
+        const updatedUsers = registeredUsers.filter(
+          user => user.email !== email
+        );
+        
+        // Update localStorage with the filtered users
+        localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+        
+        // Clear current user's local data
+        localStorage.removeItem('user');
+        
+        // Navigate back to home page
         Promise.resolve().then(() => {
-            navigate("/");
-          });
+          navigate("/");
+        });
     };
     
     return (
