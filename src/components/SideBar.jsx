@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, Sun, Moon, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import './Sidebar.css';
+import './SideBar.css';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
