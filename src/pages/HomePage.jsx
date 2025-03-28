@@ -118,8 +118,8 @@ const HomePage = () => {
   } else {
     // Invalid credentials
     setErrors({
-      email: 'Invalid email or password',
-      password: 'Invalid email or password'
+      email: 'Email is not registered',
+    //   password: 'Invalid email or password'
     });
   }
 };
